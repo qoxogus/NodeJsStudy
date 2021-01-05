@@ -21,6 +21,7 @@
   "homepage": "https://github.com/web-n/Nodejs#readme",
   "dependencies": {
     "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
     "sanitize-html": "^1.18.2"
   }
 }

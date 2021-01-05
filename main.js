@@ -1,3 +1,4 @@
+//NodeJs Mysql 생활코딩 강의를 보기 위해 다운로드 받은 코드
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
@@ -136,8 +137,8 @@ var app = http.createServer(function(request,response){
           })
       });
     } else {
-      response.writeHead(404);
+      response.writeHead(404); //404page
       response.end('Not found');
     }
 });
-app.listen(3000);
+app.listen(3000); //3000포트에서

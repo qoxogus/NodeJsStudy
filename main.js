@@ -17,7 +17,7 @@ db.connect();
 
 var app = http.createServer(function(request,response){
     var _url = request.url;
-    var queryData = url.parse(_url, true).query;
+    var queryData = url.parse(_url, true).query; //parse = 분석
     var pathname = url.parse(_url, true).pathname;
     if(pathname === '/'){
       if(queryData.id === undefined){
@@ -30,8 +30,8 @@ var app = http.createServer(function(request,response){
               `<h2>${title}</h2>${description}`, //body
               `<a href="/create">create</a>` //control
           );
-          response.writeHead(200);
-          response.end(html);
+          response.writeHead(200); //서버와의 약속 404이면 찾을수없다는 약속이다.
+          response.end(html); //화면에 보여지는 것
         });
       } else {
         fs.readdir('./data', function(error, filelist){

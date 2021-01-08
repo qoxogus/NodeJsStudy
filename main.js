@@ -85,7 +85,7 @@ var app = http.createServer(function(request,response){
           var title = post.title;
           var description = post.description;
           fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-            response.writeHead(302, {Location: `/?id=${title}`});
+            response.writeHead(302, {Location: `/?id=${title}`}); //다른 페이지로 팅궈버리는 로케이션
             response.end();
           })
       });

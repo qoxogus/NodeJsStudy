@@ -4,8 +4,9 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 var template = require('./lib/template.js');
-var path = require('path');
-var sanitizeHtml = require('sanitize-html');
+
+var path = require('path'); // uri를 바꿔 보면 안되는 페이지를 볼 수 없게 만들기위해 쓰는 것.
+var sanitizeHtml = require('sanitize-html'); //보안을 위해 <script></script> 같은 태그들을 무시하기 위해 쓰는 것.
 var mysql = require('mysql2');
 var db = mysql.createConnection({
   host    : 'localhost',

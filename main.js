@@ -90,22 +90,32 @@ var app = http.createServer(function(request,response){
       });
       }
     } else if(pathname === '/create'){
-      fs.readdir('./data', function(error, filelist){
-        var title = 'WEB - create';
-        var list = template.list(filelist);
-        var html = template.HTML(title, list, `
-          <form action="/create_process" method="post">
-            <p><input type="text" name="title" placeholder="title"></p>
-            <p>
-              <textarea name="description" placeholder="description"></textarea>
-            </p>
-            <p>
-              <input type="submit">
-            </p>
-          </form>
-        `, '');
-        response.writeHead(200);
-        response.end(html);
+      db.query(`SELECT * FROM topic`, function(error, topics) {
+        db.query('SELECT * FROM author', function(error2, authors){
+          // console.log(authors);
+          var title = 'Create';
+          var list = template.list(topics);
+          var html = template.HTML(title, list,
+              `
+              <form action="/create_process" method="post">
+                <p><input type="text" name="title" placeholder="title"></p>
+                <p>
+                  <textarea name="description" placeholder="description"></textarea>
+                </p>
+                <p>
+                  ${template.authorSelect(authors)}
+                </p>
+                <p>
+                  <input type="submit">
+                </p>
+              </form>
+              `, 
+              `<a href="/create">create</a>` //control
+          );
+          response.writeHead(200); //서버와의 약속 404이면 찾을수없다는 약속이다.
+          response.end(html); //화면에 보여지는 것
+        });
+        // console.log(topics);
       });
     } else if(pathname === '/create_process'){
       var body = '';
@@ -114,12 +124,17 @@ var app = http.createServer(function(request,response){
       });
       request.on('end', function(){
           var post = qs.parse(body);
-          var title = post.title;
-          var description = post.description;
-          fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-            response.writeHead(302, {Location: `/?id=${title}`}); //다른 페이지로 팅궈버리는 로케이션
-            response.end();
-          })
+          db.query(`INSERT INTO topic (title, description, created, author_id)
+            VALUES(?, ?, NOW(), ?)`,
+            [post.title, post.description, post.author],
+            function(error, result){
+              if(error){
+                throw error;
+              }
+              response.writeHead(302, {Location: `/?id=${result.insertId}`}); //다른 페이지로 팅궈버리는 로케이션
+              response.end();
+            }
+          )
       });
     } else if(pathname === '/update'){
       db.query('SELECT * FROM topic', function(error, topics){
@@ -132,26 +147,28 @@ var app = http.createServer(function(request,response){
           if(error2){
             throw error2;
           }
+          db.query('SELECT * FROM author', function(error2, authors){
+            var list = template.list(topics);
+            var html = template.HTML(topic[0].title, list,
+              `
+              <form action="/update_process" method="post">
+                <input type="hidden" name="id" value="${topic[0].id}">
+                <p><input type="text" name="title" placeholder="title" value="${topic[0].title}"></p>
+                <p>
+                  <textarea name="description" placeholder="description">${topic[0].description}</textarea>
+                </p>
+                <p>
+                  <input type="submit">
+                </p>
+              </form>
+              `,
+              `<a href="/create">create</a> <a href="/update?id=${topic[0].id}">update</a>`
+            );
+            response.writeHead(200);
+            response.end(html);
+          });
         // fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
           // var title = queryData.id;
-          var list = template.list(topics);
-          var html = template.HTML(topic[0].title, list,
-            `
-            <form action="/update_process" method="post">
-              <input type="hidden" name="id" value="${topic[0].id}">
-              <p><input type="text" name="title" placeholder="title" value="${topic[0].title}"></p>
-              <p>
-                <textarea name="description" placeholder="description">${topic[0].description}</textarea>
-              </p>
-              <p>
-                <input type="submit">
-              </p>
-            </form>
-            `,
-            `<a href="/create">create</a> <a href="/update?id=${topic[0].id}">update</a>`
-          );
-          response.writeHead(200);
-          response.end(html);
         });
       });
     } else if(pathname === '/update_process'){

@@ -63,16 +63,20 @@ var app = http.createServer(function(request,response){
          if(error){
            throw error;
          }
-         db.query(`SELECT * FROM topic WHERE id=?`, [queryData.id], function(error2, topic){ //보안 문제 때문에 id값에 '?'를 주고 2번째 인자값으로 []안에 '?'에 들어갈 무언가를 넣어준다.   id=${queryData.id} == [queryData.id]
+         db.query(`SELECT * FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?`, [queryData.id], function(error2, topic){ //보안 문제 때문에 id값에 '?'를 주고 2번째 인자값으로 []안에 '?'에 들어갈 무언가를 넣어준다.   id=${queryData.id} == [queryData.id]
            if(error2){
              throw error2;
            }
           //  console.log(topic[0].title) //topic은 배열의 형태로 오기때문에 배열로서 취급해주어야 한다.
+          console.log(topic);
           var title = topic[0].title;
           var description = topic[0].description;
           var list = template.list(topics);
           var html = template.HTML(title, list,
-              `<h2>${title}</h2>${description}`, //body
+              `
+              <h2>${title}</h2>${description}
+              <p>by ${topic[0].name}</p>
+              `,
               ` <a href="/create">create</a>
               <a href="/update?id=${queryData.id}">update</a>
               <form action="delete_process" method="post">

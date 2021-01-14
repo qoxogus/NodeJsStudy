@@ -7,7 +7,9 @@ var template = require('./lib/template.js');
 // var path = require('path'); // uri를 바꿔 보면 안되는 페이지를 볼 수 없게 만들기위해 쓰는 것.
 // var sanitizeHtml = require('sanitize-html'); //보안을 위해 <script></script> 같은 태그들을 무시하기 위해 쓰는 것.
 var db = require('./lib/db')
-var topic = require('./lib/topic')
+var topic = require('./lib/topic');
+const { authorSelect } = require('./lib/template.js');
+var author = require('./lib/author')
 
 var app = http.createServer(function(request,response){
     var _url = request.url;
@@ -29,7 +31,10 @@ var app = http.createServer(function(request,response){
       topic.update_process(request, response);
     } else if(pathname === '/delete_process'){
       topic.delete_process(request, response);
-    } else {
+    } else if(pathname === '/author'){
+      author.home(request, response);
+    } 
+    else {
       response.writeHead(404); //404page
       response.end('Not found');
     }

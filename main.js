@@ -69,7 +69,7 @@ var app = http.createServer(function(request,response){
            }
           //  console.log(topic[0].title) //topic은 배열의 형태로 오기때문에 배열로서 취급해주어야 한다.
           console.log(topic);
-          var title = topic[0].title;
+          var title = topic[0].title;  //topic은 배열의 형태로 오기때문에 배열로서 취급해주어야 한다.
           var description = topic[0].description;
           var list = template.list(topics);
           var html = template.HTML(title, list,
@@ -103,7 +103,7 @@ var app = http.createServer(function(request,response){
                   <textarea name="description" placeholder="description"></textarea>
                 </p>
                 <p>
-                  ${template.authorSelect(authors)}
+                  ${template.authorSelect(authors)}  //template.js
                 </p>
                 <p>
                   <input type="submit">
@@ -124,8 +124,8 @@ var app = http.createServer(function(request,response){
       });
       request.on('end', function(){
           var post = qs.parse(body);
-          db.query(`INSERT INTO topic (title, description, created, author_id)
-            VALUES(?, ?, NOW(), ?)`,
+          db.query(`INSERT INTO topic (title, description, created, author_id) 
+            VALUES(?, ?, NOW(), ?)`, //상세보기를 만들 때 db 테이블에 인서트를 해준다 
             [post.title, post.description, post.author],
             function(error, result){
               if(error){
@@ -140,7 +140,7 @@ var app = http.createServer(function(request,response){
       db.query('SELECT * FROM topic', function(error, topics){
       // fs.readdir('./data', function(error, filelist){
         // var filteredId = path.parse(queryData.id).base; //필요없는 부분
-        if(error){
+        if(error){  //예외처리
           throw error;
         }
         db.query(`SELECT * FROM topic WHERE id=?`, [queryData.id], function(error2, topic){
